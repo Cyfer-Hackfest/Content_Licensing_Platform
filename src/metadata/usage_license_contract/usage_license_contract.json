@@ -1,0 +1,712 @@
+{
+  "source": {
+    "hash": "0x30c2ebc21a949f543a7b7835a3262fb25ee23f842cf8956d445a8dbb8464d811",
+    "language": "ink! 4.3.0",
+    "compiler": "rustc 1.72.1",
+    "build_info": {
+      "build_mode": "Release",
+      "cargo_contract_version": "3.2.0",
+      "rust_toolchain": "stable-x86_64-unknown-linux-gnu",
+      "wasm_opt_settings": {
+        "keep_debug_symbols": false,
+        "optimization_passes": "Z"
+      }
+    }
+  },
+  "contract": {
+    "name": "usage_license_contract",
+    "version": "0.1.0",
+    "authors": [
+      "[your_name] <[your_email]>"
+    ]
+  },
+  "spec": {
+    "constructors": [
+      {
+        "args": [],
+        "default": false,
+        "docs": [],
+        "label": "default",
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "ink_primitives",
+            "ConstructorResult"
+          ],
+          "type": 8
+        },
+        "selector": "0xed4b9d1b"
+      }
+    ],
+    "docs": [],
+    "environment": {
+      "accountId": {
+        "displayName": [
+          "AccountId"
+        ],
+        "type": 0
+      },
+      "balance": {
+        "displayName": [
+          "Balance"
+        ],
+        "type": 5
+      },
+      "blockNumber": {
+        "displayName": [
+          "BlockNumber"
+        ],
+        "type": 4
+      },
+      "chainExtension": {
+        "displayName": [
+          "ChainExtension"
+        ],
+        "type": 11
+      },
+      "hash": {
+        "displayName": [
+          "Hash"
+        ],
+        "type": 1
+      },
+      "maxEventTopics": 3,
+      "timestamp": {
+        "displayName": [
+          "Timestamp"
+        ],
+        "type": 6
+      }
+    },
+    "events": [
+      {
+        "args": [],
+        "docs": [],
+        "label": "NewContentCreated"
+      },
+      {
+        "args": [],
+        "docs": [],
+        "label": "ContentPaymentUpdated"
+      },
+      {
+        "args": [],
+        "docs": [],
+        "label": "ContentUsageLicenseBought"
+      },
+      {
+        "args": [],
+        "docs": [],
+        "label": "UsageTimeExtended"
+      },
+      {
+        "args": [],
+        "docs": [],
+        "label": "LicenseUsagePermissionTransferred"
+      }
+    ],
+    "lang_error": {
+      "displayName": [
+        "ink",
+        "LangError"
+      ],
+      "type": 10
+    },
+    "messages": [
+      {
+        "args": [],
+        "default": false,
+        "docs": [],
+        "label": "LicenseCore::buy_usage_license",
+        "mutates": true,
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ],
+          "type": 8
+        },
+        "selector": "0x3b5c265e"
+      },
+      {
+        "args": [],
+        "default": false,
+        "docs": [],
+        "label": "LicenseCore::extend_usage_time",
+        "mutates": true,
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ],
+          "type": 8
+        },
+        "selector": "0xa1af1c52"
+      },
+      {
+        "args": [],
+        "default": false,
+        "docs": [],
+        "label": "LicenseCore::change_license_user",
+        "mutates": true,
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ],
+          "type": 8
+        },
+        "selector": "0x8857abd5"
+      },
+      {
+        "args": [],
+        "default": false,
+        "docs": [],
+        "label": "LicenseCore::get_user_licenses",
+        "mutates": false,
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ],
+          "type": 8
+        },
+        "selector": "0xcdb93ce3"
+      },
+      {
+        "args": [],
+        "default": false,
+        "docs": [],
+        "label": "ContentCore::create_content",
+        "mutates": true,
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ],
+          "type": 8
+        },
+        "selector": "0x5d281bee"
+      },
+      {
+        "args": [],
+        "default": false,
+        "docs": [],
+        "label": "ContentCore::update_payment",
+        "mutates": true,
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ],
+          "type": 8
+        },
+        "selector": "0x249a4de8"
+      },
+      {
+        "args": [],
+        "default": false,
+        "docs": [],
+        "label": "ContentCore::get_contents",
+        "mutates": false,
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ],
+          "type": 8
+        },
+        "selector": "0x2c529d3a"
+      },
+      {
+        "args": [],
+        "default": false,
+        "docs": [],
+        "label": "ContentCore::get_creator_contents",
+        "mutates": false,
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ],
+          "type": 8
+        },
+        "selector": "0xef731044"
+      }
+    ]
+  },
+  "storage": {
+    "root": {
+      "layout": {
+        "struct": {
+          "fields": [
+            {
+              "layout": {
+                "root": {
+                  "layout": {
+                    "struct": {
+                      "fields": [
+                        {
+                          "layout": {
+                            "leaf": {
+                              "key": "0x8b7669ab",
+                              "ty": 0
+                            }
+                          },
+                          "name": "creator"
+                        },
+                        {
+                          "layout": {
+                            "leaf": {
+                              "key": "0x8b7669ab",
+                              "ty": 3
+                            }
+                          },
+                          "name": "avt"
+                        },
+                        {
+                          "layout": {
+                            "struct": {
+                              "fields": [
+                                {
+                                  "layout": {
+                                    "struct": {
+                                      "fields": [
+                                        {
+                                          "layout": {
+                                            "leaf": {
+                                              "key": "0x8b7669ab",
+                                              "ty": 4
+                                            }
+                                          },
+                                          "name": "days"
+                                        },
+                                        {
+                                          "layout": {
+                                            "leaf": {
+                                              "key": "0x8b7669ab",
+                                              "ty": 5
+                                            }
+                                          },
+                                          "name": "price"
+                                        }
+                                      ],
+                                      "name": "PaymentOption"
+                                    }
+                                  },
+                                  "name": "option_1"
+                                },
+                                {
+                                  "layout": {
+                                    "struct": {
+                                      "fields": [
+                                        {
+                                          "layout": {
+                                            "leaf": {
+                                              "key": "0x8b7669ab",
+                                              "ty": 4
+                                            }
+                                          },
+                                          "name": "days"
+                                        },
+                                        {
+                                          "layout": {
+                                            "leaf": {
+                                              "key": "0x8b7669ab",
+                                              "ty": 5
+                                            }
+                                          },
+                                          "name": "price"
+                                        }
+                                      ],
+                                      "name": "PaymentOption"
+                                    }
+                                  },
+                                  "name": "option_2"
+                                },
+                                {
+                                  "layout": {
+                                    "struct": {
+                                      "fields": [
+                                        {
+                                          "layout": {
+                                            "leaf": {
+                                              "key": "0x8b7669ab",
+                                              "ty": 4
+                                            }
+                                          },
+                                          "name": "days"
+                                        },
+                                        {
+                                          "layout": {
+                                            "leaf": {
+                                              "key": "0x8b7669ab",
+                                              "ty": 5
+                                            }
+                                          },
+                                          "name": "price"
+                                        }
+                                      ],
+                                      "name": "PaymentOption"
+                                    }
+                                  },
+                                  "name": "option_3"
+                                }
+                              ],
+                              "name": "Payment"
+                            }
+                          },
+                          "name": "payment"
+                        }
+                      ],
+                      "name": "Content"
+                    }
+                  },
+                  "root_key": "0x8b7669ab"
+                }
+              },
+              "name": "contents"
+            },
+            {
+              "layout": {
+                "root": {
+                  "layout": {
+                    "struct": {
+                      "fields": [
+                        {
+                          "layout": {
+                            "leaf": {
+                              "key": "0xa48905c6",
+                              "ty": 6
+                            }
+                          },
+                          "name": "content_id"
+                        },
+                        {
+                          "layout": {
+                            "leaf": {
+                              "key": "0xa48905c6",
+                              "ty": 0
+                            }
+                          },
+                          "name": "user"
+                        },
+                        {
+                          "layout": {
+                            "leaf": {
+                              "key": "0xa48905c6",
+                              "ty": 6
+                            }
+                          },
+                          "name": "start_date"
+                        },
+                        {
+                          "layout": {
+                            "leaf": {
+                              "key": "0xa48905c6",
+                              "ty": 6
+                            }
+                          },
+                          "name": "end_date"
+                        },
+                        {
+                          "layout": {
+                            "struct": {
+                              "fields": [
+                                {
+                                  "layout": {
+                                    "leaf": {
+                                      "key": "0xa48905c6",
+                                      "ty": 3
+                                    }
+                                  },
+                                  "name": "detail"
+                                },
+                                {
+                                  "layout": {
+                                    "enum": {
+                                      "dispatchKey": "0xa48905c6",
+                                      "name": "Star",
+                                      "variants": {
+                                        "0": {
+                                          "fields": [],
+                                          "name": "One"
+                                        },
+                                        "1": {
+                                          "fields": [],
+                                          "name": "Two"
+                                        },
+                                        "2": {
+                                          "fields": [],
+                                          "name": "Three"
+                                        },
+                                        "3": {
+                                          "fields": [],
+                                          "name": "Four"
+                                        },
+                                        "4": {
+                                          "fields": [],
+                                          "name": "Five"
+                                        }
+                                      }
+                                    }
+                                  },
+                                  "name": "star"
+                                }
+                              ],
+                              "name": "Review"
+                            }
+                          },
+                          "name": "review"
+                        }
+                      ],
+                      "name": "License"
+                    }
+                  },
+                  "root_key": "0xa48905c6"
+                }
+              },
+              "name": "licenses"
+            },
+            {
+              "layout": {
+                "root": {
+                  "layout": {
+                    "leaf": {
+                      "key": "0xe807ac52",
+                      "ty": 7
+                    }
+                  },
+                  "root_key": "0xe807ac52"
+                }
+              },
+              "name": "content_to_licenses"
+            },
+            {
+              "layout": {
+                "root": {
+                  "layout": {
+                    "leaf": {
+                      "key": "0x35370ba6",
+                      "ty": 7
+                    }
+                  },
+                  "root_key": "0x35370ba6"
+                }
+              },
+              "name": "creator_to_contents"
+            },
+            {
+              "layout": {
+                "root": {
+                  "layout": {
+                    "leaf": {
+                      "key": "0x2be09984",
+                      "ty": 7
+                    }
+                  },
+                  "root_key": "0x2be09984"
+                }
+              },
+              "name": "creator_to_licenses"
+            },
+            {
+              "layout": {
+                "leaf": {
+                  "key": "0x00000000",
+                  "ty": 6
+                }
+              },
+              "name": "content_id_nonce"
+            },
+            {
+              "layout": {
+                "leaf": {
+                  "key": "0x00000000",
+                  "ty": 6
+                }
+              },
+              "name": "license_id_nonce"
+            }
+          ],
+          "name": "UsageLicenseContract"
+        }
+      },
+      "root_key": "0x00000000"
+    }
+  },
+  "types": [
+    {
+      "id": 0,
+      "type": {
+        "def": {
+          "composite": {
+            "fields": [
+              {
+                "type": 1,
+                "typeName": "[u8; 32]"
+              }
+            ]
+          }
+        },
+        "path": [
+          "ink_primitives",
+          "types",
+          "AccountId"
+        ]
+      }
+    },
+    {
+      "id": 1,
+      "type": {
+        "def": {
+          "array": {
+            "len": 32,
+            "type": 2
+          }
+        }
+      }
+    },
+    {
+      "id": 2,
+      "type": {
+        "def": {
+          "primitive": "u8"
+        }
+      }
+    },
+    {
+      "id": 3,
+      "type": {
+        "def": {
+          "primitive": "str"
+        }
+      }
+    },
+    {
+      "id": 4,
+      "type": {
+        "def": {
+          "primitive": "u32"
+        }
+      }
+    },
+    {
+      "id": 5,
+      "type": {
+        "def": {
+          "primitive": "u128"
+        }
+      }
+    },
+    {
+      "id": 6,
+      "type": {
+        "def": {
+          "primitive": "u64"
+        }
+      }
+    },
+    {
+      "id": 7,
+      "type": {
+        "def": {
+          "sequence": {
+            "type": 6
+          }
+        }
+      }
+    },
+    {
+      "id": 8,
+      "type": {
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "fields": [
+                  {
+                    "type": 9
+                  }
+                ],
+                "index": 0,
+                "name": "Ok"
+              },
+              {
+                "fields": [
+                  {
+                    "type": 10
+                  }
+                ],
+                "index": 1,
+                "name": "Err"
+              }
+            ]
+          }
+        },
+        "params": [
+          {
+            "name": "T",
+            "type": 9
+          },
+          {
+            "name": "E",
+            "type": 10
+          }
+        ],
+        "path": [
+          "Result"
+        ]
+      }
+    },
+    {
+      "id": 9,
+      "type": {
+        "def": {
+          "tuple": []
+        }
+      }
+    },
+    {
+      "id": 10,
+      "type": {
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "index": 1,
+                "name": "CouldNotReadInput"
+              }
+            ]
+          }
+        },
+        "path": [
+          "ink_primitives",
+          "LangError"
+        ]
+      }
+    },
+    {
+      "id": 11,
+      "type": {
+        "def": {
+          "variant": {}
+        },
+        "path": [
+          "ink_env",
+          "types",
+          "NoChainExtension"
+        ]
+      }
+    }
+  ],
+  "version": "4"
+}
