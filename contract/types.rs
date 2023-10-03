@@ -39,7 +39,7 @@ pub struct Payment {
     derive(scale_info::TypeInfo, ink::storage::traits::StorageLayout)
 )]
 pub struct Content {
-    pub creator: AccountId,
+    pub author: AccountId,
     pub avt: String,
     pub payment: Payment,
 }

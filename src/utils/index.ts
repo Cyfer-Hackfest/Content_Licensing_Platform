@@ -12,4 +12,5 @@ const shorttenAddress = (
   return `${prefix}...${suffix}`;
 };
 
+
 export { shorttenAddress };

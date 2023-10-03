@@ -4,13 +4,22 @@ import { ChainId } from 'useink/chains';
 import { planckToDecimalFormatted } from 'useink/utils';
 import { shorttenAddress } from '../../utils';
 import { SUPPORTED_NETWORKS } from '../../constants';
-
-const chain: ChainId = 'phala-testnet'
+import { useAppDispatch, useAppSelector } from '../../context';
+import { NetWork } from '../../types';
+import { setNetworkAsync } from '../../context/appState';
 
 export const SwitchNetwork = () => {
-  const { account } = useWallet();
+    const { account } = useWallet();
     const [showNetworkSwitch, setShowNetworkSwitch] = useState(false);
-    const balance = useBalance(account, chain);
+    const {network} = useAppSelector(state => state.app_state)
+
+    const balance = useBalance(account, network.chain_id);
+
+    const dispatch = useAppDispatch()
+
+    const switchNetwork = (network: NetWork) => {
+        dispatch(setNetworkAsync(network))
+    }
 
     return (
         <div className="relative group bg-blue-300 px-8 py-2 rounded-3xl"
@@ -19,14 +28,14 @@ export const SwitchNetwork = () => {
         >
             <div className="text-white cursor-pointer flex flex-row justify-start items-center"
             >
-                <img src={SUPPORTED_NETWORKS[0].logo_url} alt="" width={30} height={30} className='mr-3' />
+                <img src={network.logo_url} alt="" width={30} height={30} className='mr-3' />
                 <div>
                     <p>
-                        {SUPPORTED_NETWORKS[0].name}
+                        {network.name}
                     </p>
                     <p>{planckToDecimalFormatted(balance?.freeBalance, {
-                      decimals: 12
-                    })} {SUPPORTED_NETWORKS[0].currency}</p>
+                      decimals: network.decimals
+                    })} {network.currency}</p>
                 </div>
             </div>
 
@@ -35,9 +44,9 @@ export const SwitchNetwork = () => {
                     onMouseEnter={() => setShowNetworkSwitch(true)}
                     onMouseLeave={() => setShowNetworkSwitch(false)}
                 >
-                    <p>There are 4 chains supported</p>
+                    <p>There are {SUPPORTED_NETWORKS.length} chains supported</p>
                     {SUPPORTED_NETWORKS.map(net => (
-                        <div key={net.chain_id} className='rounded-2xl text-white p-2 bg-blue-500 hover:bg-blue-600 transition duration-75 flex-col justify-start items-start'>
+                        <div key={net.chain_id} className='rounded-2xl text-white p-2 bg-blue-500 hover:bg-blue-600 transition duration-75 flex-col justify-start items-start' onClick={()=> switchNetwork(net)}>
                             <p>{net.name}</p>
                         </div>
                     ))}

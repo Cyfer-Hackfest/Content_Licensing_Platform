@@ -1,11 +1,9 @@
 import { configureStore } from '@reduxjs/toolkit'
 import appState from './appState';
 
-// ...
-
 const store = configureStore({
   reducer: {
-    state: appState
+    app_state: appState
   }
 })
 

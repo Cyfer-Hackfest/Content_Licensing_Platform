@@ -1,3 +1,4 @@
-import { HomePage } from './HomePage';
+import { UserContent } from './UserContent';
+import { UserLicense } from './UserLicense';
 
-export default HomePage;
+export {UserContent, UserLicense};
