@@ -1,34 +1,28 @@
 import React, { useEffect, useState } from "react";
 import styled from 'styled-components';
-import { Content, ContentId } from "../../types";
+import { Content, ContentId, License } from "../../types";
 import { useRouter } from "next/router";
+import { shorttenAddress } from "../../utils";
 
 interface ContentCardProps {
-  content: Content;
-  isAuthor: boolean;
-  onBuyClick: (contentId: ContentId) => void;
-  setContentToShow: (content: Content) => void;
+  license: License;
+  setLicenseToShow: (license: License) => void;
 }
 
 const LicenseCard: React.FC<ContentCardProps> = ({
-  content,
-  isAuthor,
-  onBuyClick,
-  setContentToShow,
+  license,
+  setLicenseToShow,
 }) => {
 
   return (
-    <CardContainer onClick={() => setContentToShow(content)}>
-      <IsAuthor>{isAuthor && <OwnerTitle>Own by You</OwnerTitle>}</IsAuthor>
+    <CardContainer onClick={() => setLicenseToShow(license)}>
 
-      <Image
-        src={`https://gateway.pinata.cloud/ipfs/${content.avt}`}
-        alt={content.name}
-      />
-      <p>by @{content.author}</p>
-      <Title>{content.name}</Title>
-      <Description>{content.description}</Description>
-      {/* <Price>{content.royalty} *</Price> */}
+      <Title className="mb-2 text-center">Usage License</Title>
+      <p className="my-2">by @{shorttenAddress(license.user, 6, 4)}</p>
+      <p className="my-2">Start day: {license.startDate}</p>
+      <p className="my-2">Expired day: {license.endDate}</p>
+      <Description className="my-2">{license.review.detail}</Description>
+    
     </CardContainer>
   );
 };
@@ -39,16 +33,10 @@ const CardContainer = styled.div`
   position: relative;
   border: 1px solid #ccc;
   border-radius: 8px;
-  padding: 2em;
-  margin: 2em;
-  flex-basis: calc(33% - 4em);
-`;
-
-const Image = styled.img`
-  width: 100%;
-  max-height: 200px;
-  object-fit: cover;
-  border-radius: 8px;
+  padding: 0.5em;
+  margin: 0.5em;
+  width: 300px;
+  background-color: green;
 `;
 
 const Title = styled.h2`
@@ -58,20 +46,4 @@ const Title = styled.h2`
 
 const Description = styled.h4`
   margin-top: 8px;
-`;
-
-const IsAuthor = styled.div`
-  background-color: blue;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  position: absolute;
-  left: 0;
-  top: 0;
-`;
-
-const OwnerTitle = styled.p`
-  padding: 8px 12px;
-  font-weight: bold;
 `;

@@ -15,27 +15,34 @@ import { FileDropper } from '../FileDropper';
 import { ConnectWallet } from '../ConnectWallet';
 import { useAppDispatch, useAppSelector } from '../../context';
 import styled from 'styled-components';
-import { ContentCard } from '../ContentCard';
+import { ContentCard, ContentCardModal } from '../ContentCard';
 import { Content, ContentsResponse } from '../../types';
+import { CreateModal } from '../CreateModal';
+import metadata from '../../metadata/usage_license_contract/usage_license_contract.json'
 
 type ContentsResult = Array<ContentsResponse>
 
 export const HomePage: React.FC = () => {
-  const { network, contract } = useAppSelector(state => state.app_state)
+  const { network } = useAppSelector(state => state.app_state)
   const dispatch = useAppDispatch()
   const { addNotification } = useNotifications();
   const { account } = useWallet();
-  const [contentData, setContentData] = useState<ContentsResult>([])
-  const call = useCall<ContentsResult>(contract, '');
+  
+  const contract = useContract(network.contract_address, metadata, network.chain_id);
+  const call = useCall<ContentsResult>(contract, 'getnumber');
+
+  const [contentData, setContentData] = useState<ContentsResponse>([])
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState<boolean>(false)
+  const [contentToShow, setContentToShow] = useState<Content | null>(null)
 
   useEffect(() => {
     call.send([]);
-
+    
     if (call.result?.ok) {
       setContentData(call.result.value.decoded)
     }
-  
   }, [])
+
   
 
   useEffect(() => {
@@ -45,9 +52,11 @@ export const HomePage: React.FC = () => {
         message: `Connected to ${account.name || account.address}`,
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [account]);  
+  }, [account]);
 
-  if (contract?.contract) {
+  console.log(contract);
+  
+  if (!contract?.contract) {
     return (
       <div className='justify-center h-screen flex items-center w-full'>
         <h1 className='text-3xl font-bold'>Loading contract...</h1>
@@ -59,50 +68,38 @@ export const HomePage: React.FC = () => {
     <section className='w-full mx-auto'>
       <Notifications />
       
+      <CreateModal isOpen={isCreateModalOpen} onClose={() => setIsCreateModalOpen(false)} />
+
+      <button className='bg-green-400 px-5 py-2 rounded-xl ml-10 mt-5' onClick={() => setIsCreateModalOpen(true)}>Create Content</button>
+
+      {contentToShow && (
+        <ContentCardModal content={contentToShow} onClose={() => setContentToShow(null)}/>
+      )}
+
       <ContentGrid >
-        <ContentCard content={{
+        <ContentCard 
+        content={{
           author: '0x1232...3213',
           name: 'abbc',
-          avt: 'QmddhSuxm11RFcKt7vbtDhfh7hAbaybaF3FaoSm3SjDK32',
+          avt: 'QmbdEf5kx53QvkYpaJu3t9pA83ragJybyCUQcyysUV7pgE',
           description: 'nothing',
+          media: "QmZhwctgtktzUCQRRbQPPZofuKo2FAKmi32y36XSrePX7j",
           payment: {}
-        }} isAuthor={false} onBuyClick={function (contentId: string): void {
+        }} 
+        isAuthor={false} 
+        onBuyClick={function (contentId: string): void {
           throw new Error('Function not implemented.');
-        } } setContentToShow={function (content: Content): void {
-          throw new Error('Function not implemented.');
-        } } /><ContentCard content={{
+        }} 
+        setContentToShow={() => setContentToShow({
           author: '0x1232...3213',
           name: 'abbc',
-          avt: 'QmddhSuxm11RFcKt7vbtDhfh7hAbaybaF3FaoSm3SjDK32',
+          avt: 'QmbdEf5kx53QvkYpaJu3t9pA83ragJybyCUQcyysUV7pgE',
           description: 'nothing',
-          payment: {}
-        }} isAuthor={false} onBuyClick={function (contentId: string): void {
-          throw new Error('Function not implemented.');
-        } } setContentToShow={function (content: Content): void {
-          throw new Error('Function not implemented.');
-        } } /><ContentCard content={{
-          author: '0x1232...3213',
-          name: 'abbc',
-          avt: 'QmddhSuxm11RFcKt7vbtDhfh7hAbaybaF3FaoSm3SjDK32',
-          description: 'nothing',
-          payment: {}
-        }} isAuthor={false} onBuyClick={function (contentId: string): void {
-          throw new Error('Function not implemented.');
-        } } setContentToShow={function (content: Content): void {
-          throw new Error('Function not implemented.');
-        } } /><ContentCard content={{
-          author: '0x1232...3213',
-          name: 'abbc',
-          avt: 'QmddhSuxm11RFcKt7vbtDhfh7hAbaybaF3FaoSm3SjDK32',
-          description: 'nothing',
-          payment: {}
-        }} isAuthor={false} onBuyClick={function (contentId: string): void {
-          throw new Error('Function not implemented.');
-        } } setContentToShow={function (content: Content): void {
-          throw new Error('Function not implemented.');
-        } } />
+          payment: {},
+          media: "QmZhwctgtktzUCQRRbQPPZofuKo2FAKmi32y36XSrePX7j",
+        })} />
       </ContentGrid>
-      
+
       {/* <ToggleSwitch enabled={false} onChange={() => {}} /> */}
       {/* <Snackbar show={true} message={'1234213123'} type={'success'} onClick={() => {}} /> */}
       {/* <SelectList onChange={function (value: SelectOption | null): void {

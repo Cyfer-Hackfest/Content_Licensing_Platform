@@ -1,12 +1,13 @@
 import { useState } from 'react';
-import { useBalance, useInstalledWallets, useUninstalledWallets, useWallet } from 'useink';
+import { useBalance, useContract, useInstalledWallets, useUninstalledWallets, useWallet } from 'useink';
 import { ChainId } from 'useink/chains';
 import { planckToDecimalFormatted } from 'useink/utils';
 import { shorttenAddress } from '../../utils';
 import { SUPPORTED_NETWORKS } from '../../constants';
 import { useAppDispatch, useAppSelector } from '../../context';
 import { NetWork } from '../../types';
-import { setNetworkAsync } from '../../context/appState';
+import { setNetwork } from '../../context/appState';
+import metadata from '../../metadata/usage_license_contract/usage_license_contract.json'
 
 export const SwitchNetwork = () => {
     const { account } = useWallet();
@@ -17,8 +18,8 @@ export const SwitchNetwork = () => {
 
     const dispatch = useAppDispatch()
 
-    const switchNetwork = (network: NetWork) => {
-        dispatch(setNetworkAsync(network))
+    const switchNetwork  =async (network: NetWork) => {
+        dispatch(setNetwork({network }))
     }
 
     return (
@@ -26,7 +27,7 @@ export const SwitchNetwork = () => {
             onMouseEnter={() => setShowNetworkSwitch(true)}
             onMouseLeave={() => setShowNetworkSwitch(false)}
         >
-            <div className="text-white cursor-pointer flex flex-row justify-start items-center"
+            <div className="text-black cursor-pointer flex flex-row justify-start items-center"
             >
                 <img src={network.logo_url} alt="" width={30} height={30} className='mr-3' />
                 <div>
@@ -40,7 +41,7 @@ export const SwitchNetwork = () => {
             </div>
 
             {showNetworkSwitch && (
-                <div className="absolute bg-black p-2 space-y-2 shadow-md right-0 top-16 text-white w-60"
+                <div className="absolute bg-black p-2 space-y-2 shadow-md right-0 top-16 text-white w-60 z-20"
                     onMouseEnter={() => setShowNetworkSwitch(true)}
                     onMouseLeave={() => setShowNetworkSwitch(false)}
                 >

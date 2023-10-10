@@ -2,10 +2,12 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import axios from "axios";
 import { TokenMetadata } from "../../types";
-import { useTx, useWallet } from "useink";
+import { useContract, useTx, useWallet } from "useink";
 import { useSelector } from "react-redux";
 import { useAppSelector } from "../../context";
 import { CreateContentRequest } from "../../types/request";
+import metadata from '../../metadata/usage_license_contract/usage_license_contract.json'
+
 
 const NEXT_PUBLIC_PINATA_JWT = process.env.NEXT_PUBLIC_PINATA_JWT
 
@@ -23,7 +25,7 @@ const BuyUsageLicenseModal: React.FC<BuyUsageLicenseModalProps> = ({
     data
 }) => {
     const { account } = useWallet()
-    const {contract} = useAppSelector(state => state.app_state);
+    const {network} = useAppSelector(state => state.app_state);
     const [receiverId, setReceiverId] = useState<string | undefined>(undefined);
     const [metadata, setMetadata] = useState<TokenMetadata>({
         title: "",
@@ -31,6 +33,8 @@ const BuyUsageLicenseModal: React.FC<BuyUsageLicenseModalProps> = ({
         avt: "",
         media: ""
     });
+
+    const contract = useContract(network.contract_address, metadata, network.chain_id);
 
     const tx = useTx<CreateContentRequest>(contract, '');
 

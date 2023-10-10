@@ -17,8 +17,8 @@ pub struct MyEnvironment;
     derive(scale_info::TypeInfo, ink::storage::traits::StorageLayout)
 )]
 pub struct PaymentOption {
-    days: u32,
-    price: Balance,
+    pub days: u32,
+    pub price: Balance,
 }
 
 #[derive(scale::Decode, scale::Encode)]
@@ -27,9 +27,20 @@ pub struct PaymentOption {
     derive(scale_info::TypeInfo, ink::storage::traits::StorageLayout)
 )]
 pub struct Payment {
-    option_1: PaymentOption,
-    option_2: PaymentOption,
-    option_3: PaymentOption,
+    pub option_1: Option<PaymentOption>,
+    pub option_2: Option<PaymentOption>,
+    pub option_3: Option<PaymentOption>,
+}
+
+#[derive(scale::Decode, scale::Encode)]
+#[cfg_attr(
+    feature = "std",
+    derive(scale_info::TypeInfo, ink::storage::traits::StorageLayout)
+)]
+pub enum PaymentOptionRequest {
+    Option1,
+    Option2,
+    Option3,
 }
 
 // #[ink::storage_item]
@@ -39,8 +50,12 @@ pub struct Payment {
     derive(scale_info::TypeInfo, ink::storage::traits::StorageLayout)
 )]
 pub struct Content {
+    pub content_id: ContentId,
     pub author: AccountId,
+    pub name: String,
     pub avt: String,
+    pub media: String,
+    pub description: String,
     pub payment: Payment,
 }
 
@@ -74,9 +89,10 @@ pub struct Review {
     derive(scale_info::TypeInfo, ink::storage::traits::StorageLayout)
 )]
 pub struct License {
-    content_id: ContentId,
-    user: AccountId,
-    start_date: Timestamp,
-    end_date: Timestamp,
-    review: Review,
+    pub content_id: ContentId,
+    pub license_id: LicenseId,
+    pub user: AccountId,
+    pub start_date: Timestamp,
+    pub end_date: Timestamp,
+    pub review: Option<Review>,
 }

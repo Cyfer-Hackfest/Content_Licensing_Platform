@@ -26,7 +26,27 @@ type Content = {
     name: string,
     avt: string,
     description: string,
-    payment: {}
+    payment: {},
+    media: string
 }
 
-export type {NetWork, Content, ContentId, ContentsResponse, TokenMetadata}
+export enum Star {
+    One,
+    Two,
+    Three,
+    Four,
+    Five,
+}
+
+type License = {
+    contentId: number,
+    user: string,
+    startDate: number,
+    endDate: number,
+    review: {
+        detail: string,
+        star: Star
+    }
+}
+
+export type {NetWork, Content, ContentId, ContentsResponse, TokenMetadata, License}

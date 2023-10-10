@@ -3,6 +3,7 @@ import { Notifications } from '../components/Notifications';
 import { useEffect, useState } from 'react';
 import {
   useCall,
+  useContract,
   useWallet,
 } from 'useink';
 import { ChainId } from 'useink/chains';
@@ -12,26 +13,30 @@ import { ContentsResponse } from '../types';
 import { UserContent, UserLicense } from '../components/pg-profile';
 import { LicensesResponse } from '../types/response';
 
+import metadata from "../metadata/usage_license_contract/usage_license_contract.json";
+
 type ContentsResult = Array<ContentsResponse>
 type LicensesResult = Array<LicensesResponse>
 
 export default function Profile() {
-  const { network, contract } = useAppSelector(state => state.app_state)
+  const { network } = useAppSelector(state => state.app_state)
   const dispatch = useAppDispatch()
   const { addNotification } = useNotifications();
   const { account } = useWallet();
   const [contentData, setContentData] = useState<ContentsResult>([])
   const [licenseData, setLicenseData] = useState<LicensesResult>([])
 
+  const contract = useContract(network.contract_address, metadata, network.chain_id);
+  const contentCall = useCall<ContentsResult>(contract, '');
+  const licenseCall = useCall<ContentsResult>(contract, '');
+
   useEffect(() => {
-    const contentCall = useCall<ContentsResult>(contract, '');
     contentCall.send([]);
 
     if (contentCall.result?.ok) {
       setContentData(contentCall.result.value.decoded)
     }
 
-    const licenseCall = useCall<ContentsResult>(contract, '');
     licenseCall.send([]);
 
     if (licenseCall.result?.ok) {

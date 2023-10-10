@@ -41,7 +41,7 @@ const CardContainer = styled.div`
   border-radius: 8px;
   padding: 2em;
   margin: 2em;
-width: 400px
+  width: 400px
 `;
 
 const Image = styled.img`

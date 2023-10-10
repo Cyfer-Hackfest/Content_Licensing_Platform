@@ -15,15 +15,6 @@ export const ConnectWallet = () => {
   const [showUserSwitch, setShowUserSwitch] = useState(false);
   const [showWalletToConnect, setShowWalletToConnect] = useState(false);
 
-
-  if (installedWallets.length === 0) {
-    return (
-      <h2 className='text-xl font-bold'>
-        You don&apos;t have any wallets installed...
-      </h2>
-    );
-  }
-
   return (
     <>
       {!account ? (
@@ -34,7 +25,7 @@ export const ConnectWallet = () => {
           <h2 className='text-2xl font-bold'>Connect a Wallet</h2>
 
           {showWalletToConnect && (
-            <div className="absolute bg-black p-2 space-y-2 shadow-md right-0 top-16 text-white"
+            <div className="absolute bg-black p-2 space-y-2 shadow-md right-0 top-16 text-white z-20"
               onMouseEnter={() => setShowWalletToConnect(true)}
               onMouseLeave={() => setShowWalletToConnect(false)}
             >
@@ -100,11 +91,11 @@ export const ConnectWallet = () => {
             <span className='dark:bg-slate-900 mr-2 bg-slate-200 rounded-3xl py-2 px-3'>
               {account?.name}
             </span>
-            <span>{shorttenAddress(account?.address, 4, 4)}</span>
+            <span className='text-black'>{shorttenAddress(account?.address, 4, 4)}</span>
           </div>
 
           {showUserSwitch && (
-            <div className="absolute bg-black p-2 space-y-2 shadow-md right-0 top-16 text-white w-52"
+            <div className="absolute bg-black p-2 space-y-2 shadow-md right-0 top-16 text-white w-52 z-20"
               onMouseEnter={() => setShowUserSwitch(true)}
               onMouseLeave={() => setShowUserSwitch(false)}
             >

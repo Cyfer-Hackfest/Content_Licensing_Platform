@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { ConnectWallet } from '../ConnectWallet';
 import { SwitchNetwork } from '../SwitchNetwork';
 import Head from 'next/head';
+import Link from 'next/link';
 
 const Header = () => {
     const [showUserSwitch, setShowUserSwitch] = useState(false);
@@ -28,8 +29,9 @@ const Header = () => {
         
         <header className="bg-blue-500 p-4 flex justify-between items-center">
             {/* Left Side - Logo */}
-            <div className="text-white text-lg font-semibold">
-                Your Logo
+            <div>
+                <Link href={'/'}>logo</Link>
+                <Link href={'/profile'}>profile</Link>
             </div>
 
             {/* Right Side - User and Network */}

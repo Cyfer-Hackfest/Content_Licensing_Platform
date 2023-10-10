@@ -30,7 +30,7 @@ const SUPPORTED_NETWORKS: Array<NetWork> = [
         name: "Aleph Zero Testnet",
         logo_url: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAM1BMVEVHcEwUICoUICoUICoUICoUICoUICoUICoUICoUICoUICoUICoUICoUICoUICoUICoUICqY2rgjAAAAEXRSTlMABy5z/+BcvzzqrvgajpjK13xKcw8AAADDSURBVHgBvZNBDoAgDAQLUlBA7P9fa0uaqBSuzkFDhHUdAf7GecbBmi0wGyxxGBhcR8TQicuAFDppFbHzw+Pgyw5zsjSUnhmm+MIBtXJE8TDj5LUNoPHthAmyNHgOChK0kJSASUZWRqH0+voxBQUt666gXNB5xm6YoArjOKEhkTQkp5EkPYmwjZLefbOVhBWUikZWE0l2aCQpVpZ5aR58o0gyf/67kwg+0KNF1UW7+653HrrJ/t2NpEXvak6LnqEKv3ADL5YGwvGMWjcAAAAASUVORK5CYII=',
         currency: 'AZERO',
-        contract_address: '',
+        contract_address: '5D99CX3SE5zmWgdf1gwjyLGedyNrzyCYRS83gepKsX4D4LvD',
         decimals: 15
     },
 ]

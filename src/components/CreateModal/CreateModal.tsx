@@ -9,18 +9,14 @@ import { CreateContentRequest } from "../../types/request";
 
 const NEXT_PUBLIC_PINATA_JWT = process.env.NEXT_PUBLIC_PINATA_JWT
 
-interface CreateUpdateModalProps {
+interface CreateModalProps {
     isOpen: boolean;
     onClose: () => void;
-    action: 'update' | "create",
-    data?: TokenMetadata
 }
 
-const CreateUpdateModal: React.FC<CreateUpdateModalProps> = ({
+const CreateModal: React.FC<CreateModalProps> = ({
     isOpen,
     onClose,
-    action,
-    data
 }) => {
     const { account } = useWallet()
     const {contract} = useAppSelector(state => state.app_state);
@@ -34,17 +30,10 @@ const CreateUpdateModal: React.FC<CreateUpdateModalProps> = ({
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
     const tx = useTx<CreateContentRequest>(contract, '');
-
-
-    useEffect(() => {
-      if (data) {
-        setMetadata(data)
-      }
-    }, [])
     
     useEffect(() => {
         if (account) {
-            setReceiverId(account.toString());
+            setReceiverId(account.address.toString());
         }
     }, [account]);
 
@@ -106,36 +95,42 @@ const CreateUpdateModal: React.FC<CreateUpdateModalProps> = ({
     }
 
     return (
-        <ModalOverlay>
-            <ModalContent>
-                <Title>Work Of Art</Title>
+        <ModalOverlay onClick={onClose}>
+            <ModalContent onClick={(e) => e.stopPropagation()}>
+                <Title>New Content</Title>
+
+                <p>Author</p>
                 <Input
                     type="text"
-                    placeholder="Author"
+                    placeholder="Enter Author here"
                     value={receiverId}
                     onChange={handleReceiverIdChange}
                 />
+
+                <p>Title</p>
                 {/* Input fields for metadata */}
                 <Input
                     type="text"
-                    placeholder="Title"
+                    placeholder="Enter Title here"
                     value={metadata.title || ""}
                     onChange={(e) => handleMetadataChange("title", e.target.value)}
                 />
 
+                <p>Description</p>
                 <Input
                     type="text"
-                    placeholder="Description"
+                    placeholder="Enter Description here"
                     value={metadata.description || ""}
                     onChange={(e) => handleMetadataChange("description", e.target.value)}
                 />
+
+                <p>Avatar</p>
                 <Input
                     type="file"
                     accept="image/*"
                     onChange={(e) => handleMediaUpload(e, "avt")}
                     placeholder="AVT"
                 />
-
                 {metadata.avt && (
                     <img
                         src={`https://gateway.pinata.cloud/ipfs/${metadata.avt}`}
@@ -147,6 +142,7 @@ const CreateUpdateModal: React.FC<CreateUpdateModalProps> = ({
                     />
                 )}
 
+                <p>Media</p>
                 <Input
                     type="file"
                     accept="image/*"
@@ -189,7 +185,7 @@ const CreateUpdateModal: React.FC<CreateUpdateModalProps> = ({
     );
 };
 
-export default CreateUpdateModal;
+export default CreateModal;
 
 const ModalOverlay = styled.div`
   position: fixed;
@@ -201,6 +197,7 @@ const ModalOverlay = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 10;
 `;
 
 const ModalContent = styled.div`
@@ -210,6 +207,8 @@ const ModalContent = styled.div`
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
   display: flex;
   flex-direction: column;
+  z-index: 20;
+  color: black;
 `;
 
 const Input = styled.input`
@@ -233,5 +232,6 @@ const Button = styled.button`
 `;
 
 const Title = styled.h1`
+  color: black;
   font-size: 30px;
 `;

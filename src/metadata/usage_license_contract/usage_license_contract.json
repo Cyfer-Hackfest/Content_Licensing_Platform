@@ -1,6 +1,6 @@
 {
   "source": {
-    "hash": "0x30c2ebc21a949f543a7b7835a3262fb25ee23f842cf8956d445a8dbb8464d811",
+    "hash": "0x813637becfdb7a9bc1b9c72fd07f76adb7c8a33d0a3d82825502aa9f9b0fe293",
     "language": "ink! 4.3.0",
     "compiler": "rustc 1.72.1",
     "build_info": {
@@ -62,7 +62,7 @@
         "displayName": [
           "ChainExtension"
         ],
-        "type": 11
+        "type": 13
       },
       "hash": {
         "displayName": [
@@ -113,6 +113,22 @@
       "type": 10
     },
     "messages": [
+      {
+        "args": [],
+        "default": false,
+        "docs": [],
+        "label": "getnumber",
+        "mutates": false,
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ],
+          "type": 11
+        },
+        "selector": "0x080003c1"
+      },
       {
         "args": [],
         "default": false,
@@ -261,7 +277,7 @@
                               "ty": 0
                             }
                           },
-                          "name": "creator"
+                          "name": "author"
                         },
                         {
                           "layout": {
@@ -696,6 +712,90 @@
     },
     {
       "id": 11,
+      "type": {
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "fields": [
+                  {
+                    "type": 12
+                  }
+                ],
+                "index": 0,
+                "name": "Ok"
+              },
+              {
+                "fields": [
+                  {
+                    "type": 10
+                  }
+                ],
+                "index": 1,
+                "name": "Err"
+              }
+            ]
+          }
+        },
+        "params": [
+          {
+            "name": "T",
+            "type": 12
+          },
+          {
+            "name": "E",
+            "type": 10
+          }
+        ],
+        "path": [
+          "Result"
+        ]
+      }
+    },
+    {
+      "id": 12,
+      "type": {
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "fields": [
+                  {
+                    "type": 6
+                  }
+                ],
+                "index": 0,
+                "name": "Ok"
+              },
+              {
+                "fields": [
+                  {
+                    "type": 9
+                  }
+                ],
+                "index": 1,
+                "name": "Err"
+              }
+            ]
+          }
+        },
+        "params": [
+          {
+            "name": "T",
+            "type": 6
+          },
+          {
+            "name": "E",
+            "type": 9
+          }
+        ],
+        "path": [
+          "Result"
+        ]
+      }
+    },
+    {
+      "id": 13,
       "type": {
         "def": {
           "variant": {}
