@@ -96,3 +96,8 @@ pub struct License {
     pub end_date: Timestamp,
     pub review: Option<Review>,
 }
+
+pub struct PublicContent {
+    pub content_id: ContentId,
+    pub avt: String,
+}

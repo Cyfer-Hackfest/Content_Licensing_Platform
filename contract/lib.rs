@@ -118,7 +118,8 @@ mod usage_license_contract {
         NotOwner,
         InvalidPaymentOption,
         InvalidTransferValue,
-        IsOwner
+        IsOwner,
+        LicenseExpired,
     }
 
     impl UsageLicenseContract {
@@ -207,6 +208,9 @@ mod usage_license_contract {
         ) -> Result<LicenseId, Error> {
             let caller = self.env().caller();
             let mut current_license = self.get_license_by_id(license_id)?;
+            if current_license.end_date < self.env().block_timestamp() {
+                return Err(Error::LicenseExpired);
+            }
 
             if caller != current_license.user {
                 return Err(Error::NotOwner);
