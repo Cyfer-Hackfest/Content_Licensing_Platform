@@ -80,16 +80,32 @@ mod usage_license_contract {
     }
 
     #[ink(event)]
-    pub struct NewContentCreated {}
+    pub struct NewContentCreated {
+        content_id: ContentId,
+        author: AccountId
+    }
 
     #[ink(event)]
-    pub struct ContentPaymentUpdated {}
+    pub struct ContentPaymentUpdated {
+        content_id: ContentId,
+        payment: Payment
+    }
 
     #[ink(event)]
-    pub struct ContentUsageLicenseBought {}
+    pub struct ContentUsageLicenseBought {
+        content_id: ContentId,
+        buyer: AccountId,
+        price: Balance,
+        duration: Timestamp
+    }
 
     #[ink(event)]
-    pub struct UsageTimeExtended {}
+    pub struct UsageTimeExtended {
+        license_id: ContentId,
+        buyer: AccountId,
+        price: Balance,
+        duration: Timestamp
+    }
 
     #[ink(event)]
     pub struct LicenseUsagePermissionTransferred {}
@@ -101,7 +117,8 @@ mod usage_license_contract {
         WrongLicenseId,
         NotOwner,
         InvalidPaymentOption,
-        InvalidTransferValue
+        InvalidTransferValue,
+        IsOwner
     }
 
     impl UsageLicenseContract {
@@ -129,6 +146,9 @@ mod usage_license_contract {
             let caller = self.env().caller();
 
             let content = self.get_content_by_id(content_id)?;
+            if caller == content.author {
+                return Err(Error::IsOwner);
+            }
             let payment = content.payment;
 
             let mut op = None;
@@ -167,6 +187,13 @@ mod usage_license_contract {
                     self.add_content_licenses(content_id, license_id);
                     self.add_creator_licenses(caller, license_id);
 
+                    self.env().emit_event(ContentUsageLicenseBought {
+                        content_id,
+                        buyer: caller,
+                        price: detail.price,
+                        duration
+                    });
+
                     Ok(license_id)
                 }
                 None => return Err(Error::InvalidPaymentOption),
@@ -201,13 +228,20 @@ mod usage_license_contract {
                         return Err(Error::InvalidTransferValue);
                     }
 
-                    let new_duration = detail.days * 86400000;
-                    current_license.end_date += new_duration as u64;
+                    let new_duration = detail.days as u64 * 86400000;
+                    current_license.end_date += new_duration;
 
                     let _ = self
                         .env()
                         .transfer(content.author, self.env().transferred_value());
                     self.licenses.insert(license_id, &current_license);
+
+                    self.env().emit_event(UsageTimeExtended {
+                        license_id,
+                        buyer: caller,
+                        price: detail.price,
+                        duration: new_duration
+                    });
 
                     Ok(license_id)
                 }
@@ -279,6 +313,11 @@ mod usage_license_contract {
             self.contents.insert(content_id, &new_content);
             self.add_creator_contents(author, content_id);
 
+            self.env().emit_event(NewContentCreated {
+                content_id,
+                author
+            });
+
             Ok(content_id)
         }
 
@@ -297,9 +336,14 @@ mod usage_license_contract {
                         return Err(Error::NotOwner);
                     }
 
-                    c.payment = payment;
+                    c.payment = payment.clone();
                     self.contents.insert(content_id, &c);
 
+                    self.env().emit_event(ContentPaymentUpdated {
+                        content_id,
+                        payment
+                    });
+                    
                     Ok(content_id)
                 }
                 Err(e) => return Err(e),

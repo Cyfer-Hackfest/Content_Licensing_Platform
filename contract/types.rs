@@ -11,7 +11,7 @@ pub type BlockNumber = u32;
 
 pub struct MyEnvironment;
 
-#[derive(scale::Decode, scale::Encode)]
+#[derive(scale::Decode, scale::Encode, Clone)]
 #[cfg_attr(
     feature = "std",
     derive(scale_info::TypeInfo, ink::storage::traits::StorageLayout)
@@ -21,7 +21,7 @@ pub struct PaymentOption {
     pub price: Balance,
 }
 
-#[derive(scale::Decode, scale::Encode)]
+#[derive(scale::Decode, scale::Encode, Clone)]
 #[cfg_attr(
     feature = "std",
     derive(scale_info::TypeInfo, ink::storage::traits::StorageLayout)
