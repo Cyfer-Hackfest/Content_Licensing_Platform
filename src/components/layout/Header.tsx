@@ -20,26 +20,26 @@ const Header = () => {
 
     return (
         <>
-        <Head>
-        <title>Usage License</title>
-        <meta name='description' content='Usage License' />
-        <meta name='viewport' content='width=device-width, initial-scale=1' />
-        <link rel='icon' href='/squink.svg' />
-      </Head>
-        
-        <header className="bg-blue-500 p-4 flex justify-between items-center">
-            {/* Left Side - Logo */}
-            <div>
-                <Link href={'/'}>logo</Link>
-                <Link href={'/profile'}>profile</Link>
-            </div>
+            <Head>
+                <title>Usage License</title>
+                <meta name='description' content='Usage License' />
+                <meta name='viewport' content='width=device-width, initial-scale=1' />
+                <link rel='icon' href='/squink.svg' />
+            </Head>
 
-            {/* Right Side - User and Network */}
-            <div className="flex items-center space-x-4">
-                <SwitchNetwork />
-                <ConnectWallet />
-            </div>
-        </header>
+            <header className="bg-blue-500 p-4 flex justify-between items-center">
+                {/* Left Side - Logo */}
+                <Link href={'/'}>Home</Link>
+                {/* <div>
+                <Link href={'/profile'}>profile</Link>
+            </div> */}
+
+                {/* Right Side - User and Network */}
+                <div className="flex items-center space-x-4">
+                    <SwitchNetwork />
+                    <ConnectWallet />
+                </div>
+            </header>
         </>
     );
 };

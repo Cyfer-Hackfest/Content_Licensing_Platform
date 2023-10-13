@@ -3,10 +3,10 @@ import { ContentsResponse } from "./response";
 import { type } from "os";
 
 type TokenMetadata = {
-    title: string,
+    name: string,
     description: string,
     avt: string,
-    media: string
+    media: string,
 }
 
 
@@ -22,12 +22,24 @@ type NetWork = {
 type ContentId = string;
 
 type Content = {
+    contentId: number,
     author: string,
     name: string,
     avt: string,
+    media: string,
     description: string,
-    payment: {},
-    media: string
+    payment: Payment,
+}
+
+type Payment = {
+    option1: PaymentOption | null,
+    option2: PaymentOption | null,
+    option3: PaymentOption | null,
+}
+
+type PaymentOption = {
+    days: number | undefined | string,
+    price: number | undefined | string,
 }
 
 export enum Star {
@@ -41,12 +53,12 @@ export enum Star {
 type License = {
     contentId: number,
     user: string,
-    startDate: number,
-    endDate: number,
+    startDate: string,
+    endDate: string,
     review: {
         detail: string,
         star: Star
     }
 }
 
-export type {NetWork, Content, ContentId, ContentsResponse, TokenMetadata, License}
+export type {NetWork, Content, ContentId, ContentsResponse, TokenMetadata, License, PaymentOption, Payment}

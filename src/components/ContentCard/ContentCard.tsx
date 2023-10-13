@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import styled from 'styled-components';
 import { Content, ContentId } from "../../types";
 import { useRouter } from "next/router";
+import { shorttenAddress } from "../../utils";
 
 interface ContentCardProps {
   content: Content;
@@ -16,7 +17,7 @@ const ContentCard: React.FC<ContentCardProps> = ({
   onBuyClick,
   setContentToShow,
 }) => {
-
+  
   return (
     <CardContainer onClick={() => setContentToShow(content)}>
       <IsAuthor>{isAuthor && <OwnerTitle>Own by You</OwnerTitle>}</IsAuthor>
@@ -25,7 +26,7 @@ const ContentCard: React.FC<ContentCardProps> = ({
         src={`https://gateway.pinata.cloud/ipfs/${content.avt}`}
         alt={content.name}
       />
-      <p>by @{content.author}</p>
+      <p>by @{shorttenAddress(content.author, 6, 4)}</p>
       <Title>{content.name}</Title>
       <Description>{content.description}</Description>
       {/* <Price>{content.royalty} *</Price> */}

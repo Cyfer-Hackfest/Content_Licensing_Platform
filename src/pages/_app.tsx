@@ -7,7 +7,8 @@ import {
   Phala,
   PhalaTestnet,
   Aleph,
-  AlephTestnet
+  AlephTestnet,
+  ShibuyaTestnet
 } from 'useink/chains';
 import { NotificationsProvider } from 'useink/notifications';
 import { Header } from '../components/layout';
@@ -26,9 +27,7 @@ function App({ Component, pageProps }: AppProps) {
         config={{
           dappName: 'Usage License',
           chains: [
-            Phala,
-            Aleph,
-            PhalaTestnet,
+            ShibuyaTestnet,
             AlephTestnet
           ],
           caller: {

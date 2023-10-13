@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useBalance, useContract, useInstalledWallets, useUninstalledWallets, useWallet } from 'useink';
 import { ChainId } from 'useink/chains';
 import { planckToDecimalFormatted } from 'useink/utils';
-import { shorttenAddress } from '../../utils';
+import { shorttenAddress, stringToNumber } from '../../utils';
 import { SUPPORTED_NETWORKS } from '../../constants';
 import { useAppDispatch, useAppSelector } from '../../context';
 import { NetWork } from '../../types';
@@ -15,6 +15,9 @@ export const SwitchNetwork = () => {
     const {network} = useAppSelector(state => state.app_state)
 
     const balance = useBalance(account, network.chain_id);
+    const freeBalance = stringToNumber(planckToDecimalFormatted(balance?.freeBalance, {
+        decimals: network.decimals
+      }) ?? '')?.toFixed(2)
 
     const dispatch = useAppDispatch()
 
@@ -34,9 +37,7 @@ export const SwitchNetwork = () => {
                     <p>
                         {network.name}
                     </p>
-                    <p>{planckToDecimalFormatted(balance?.freeBalance, {
-                      decimals: network.decimals
-                    })} {network.currency}</p>
+                    <p>{freeBalance} {network.currency}</p>
                 </div>
             </div>
 

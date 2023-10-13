@@ -1,58 +1,85 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import styled from 'styled-components';
-import { Content, License, Star } from "../../types";
-import { useWallet } from "useink";
+import { Content, License, Payment, Star } from "../../types";
+import { ChainContract, useCall, useTx, useWallet } from "useink";
 import ReactPlayer from "react-player";
 import { LicenseCard } from "../LicenseCard";
 import { useNotifications } from "useink/notifications";
+import { type } from "os";
+import { useAppSelector } from "../../context";
+import UpdatePayment from "./UpdatePayment";
+import { shorttenAddress, stringToNumber } from "../../utils";
+import BuyPayment from "./BuyPayment";
+import { PaymentOptionRequest } from "../../types/request";
 
 interface ContentCardModalProps {
     content: Content;
     onClose: () => void;
+    contract: ChainContract
 }
 
-const ContentCardModal: React.FC<ContentCardModalProps> = ({ content, onClose }) => {
+const ContentCardModal: React.FC<ContentCardModalProps> = ({ content, onClose, contract }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [updatedPrice, setUpdatedPrice] = useState<string>('');
-    const [showBuyOption, setShowBuyOption] = useState<boolean>(false);
-    const [showUpdatePriceOption, setShowUpdatePriceOption] = useState<boolean>(false)
     const { account } = useWallet();
+    const { network } = useAppSelector(state => state.app_state);
     const { addNotification } = useNotifications();
+    
+    const [licenses, setLicenses] = useState<Array<License>>([])
+    
+    const buyTx = useTx<any>(contract, 'licenseCore::buyUsageLicense');
+    const call = useCall<any>(contract, 'licenseCore::getLicenses')
+    const updateTx = useTx<any>(contract, 'contentCore::updatePayment');
 
-
-    const handleShowModal = () => {
-        setIsModalOpen(true);
-    };
-
-    const handleModalClose = () => {
-        setIsModalOpen(false);
-    };
-
-    const handleBuyClick = async () => {
-        if (!account) {
-            onClose()
-            addNotification({
-                type: "Errored",
-                message: "Please Connect your wallet first"
-            })
-            return;
+    useEffect(() => {
+        const getLicenses = async () => {
+            if (contract) {
+                await call.send([content.contentId], { defaultCaller: true })
+                // console.log(call.result);
+                if (call.result?.ok) {
+                    setLicenses(call.result.value.decoded.Ok)
+                }
+            }
         }
-        if (!showBuyOption) {
-            setShowBuyOption(true)
-            return;
-        } 
-    };
+
+        getLicenses();
+
+        return () => {
+            getLicenses()
+        }
+    }, [network.chain_id, contract?.contract, content.contentId, call.result?.ok])
 
     const handleRemoveClick = () => {
-        
+
     };
 
-    const handleUpdatePrice = () => {
-        if (!showUpdatePriceOption) {
-            setShowUpdatePriceOption(true)
-        }
+    const handleUpdatePrice = (payment: Payment) => {
+        const { option1, option2, option3 } = payment;
+
+        const op1 = option1?.days && option1?.price ? option1 : null;
+        const op2 = option2?.days && option2?.price ? option2 : null;
+        const op3 = option3?.days && option3?.price ? option3 : null;
+
+        updateTx.signAndSend([content.contentId, [op1, op2, op3]])
     };
+
+    const handleBuyContent = (op: PaymentOptionRequest) => {
+        const { option1, option2, option3 } = content.payment;
+        
+        const opString: string = op == PaymentOptionRequest.Option1 ? "Option1" : op == PaymentOptionRequest.Option2 ? 'Option2' : 'Option3';
+        
+        let transfering_value: number | string | undefined = opString == 'Option1' ? option1?.price : opString == 'Option2' ? option2?.price : option3?.price;
+
+        if (typeof transfering_value == 'string') {
+            transfering_value = stringToNumber(transfering_value) ?? undefined;
+        }
+        if (transfering_value == undefined) return;
+        
+        buyTx.signAndSend([content.contentId, opString], {
+            value: transfering_value
+        })
+    }
 
     return (
         <ContainerOverlay onClick={onClose}>
@@ -60,7 +87,9 @@ const ContentCardModal: React.FC<ContentCardModalProps> = ({ content, onClose })
                 <div className="flex flex-row justify-center items-start">
                     <div>
                         <ReactPlayer
-                            url={`https://gateway.pinata.cloud/ipfs/${content.media}`} controls
+                            // url={`https://gateway.pinata.cloud/ipfs/QmZhwctgtktzUCQRRbQPPZofuKo2FAKmi32y36XSrePX7j`}
+                            url={`https://gateway.pinata.cloud/ipfs/${content.media}`}
+                            controls
                         />
                     </div>
                     <div className="w-80 ml-8">
@@ -72,188 +101,39 @@ const ContentCardModal: React.FC<ContentCardModalProps> = ({ content, onClose })
                             />
                             <ArtTitle>{content.name}</ArtTitle>
                         </div>
-                        <p>By {content.author}</p>
+                        <p>By {shorttenAddress(content.author, 6, 4)}</p>
                         <ArtDescription>{content.description}</ArtDescription>
                         <ButtonContainer>
-                            
-                        
-                                <div className="flex flex-col items-start w-full">
-                                    {account?.address != content.author ?
+                            <div className="flex flex-col items-start w-full">
+                                {account?.address != content.author ?
+                                    <>
+                                        <BuyPayment onBuy={handleBuyContent} payment={content.payment}/>
+                                    </>
+                                    : (
                                         <>
-                                            {showBuyOption && <div className="flex flex-row w-full justify-center items-center my-2">
-                                                <div className={`flex flex-col items-center justify-start p-3 border-blue-400 border rounded-xl hover:bg-green-400`} onClick={() => { }}>
-                                                    <p>100 days</p>
-                                                    <p>99 PHA</p>
-                                                </div>
-                                            </div>}
-
-                                            <Button color="#28a745" onClick={handleBuyClick}>
-                                                Buy
-                                            </Button>
+                                            <UpdatePayment payment={content.payment} onUpdate={handleUpdatePrice} />
                                         </>
-                                        : (
-                                            <>
-                                            {showUpdatePriceOption && (
-                                                <div className="flex flex-col w-full justify-center items-start my-2">
-                                                <div className={`flex flex-row items-center justify-start p-3 border-blue-400 border rounded-xl hover:bg-blue-300`} onClick={() => { }}>
-                                                    <div className="flex flex-row justify-start items-center">
-                                                        <p>Day: </p>
-                                                        <input type="number" name="" id="" value={100} className="w-full mx-1 my-0.5 p-0.5 text-center rounded-xl"/>
-                                                    </div>
-                                                    <div className="flex flex-row justify-start items-center">
-                                                        <p>Price: </p>
-                                                        <input type="number" name="" id="" value={99} className="w-full mx-1 my-0.5 p-0.5 text-center rounded-xl"/>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            )}
-                                                <Button color="#28a745" onClick={handleUpdatePrice}>
-                                                Update Price
-                                            </Button>
-                                            </>
-                                        )
-                                    }
-                                </div>
-                       
+                                    )
+                                }
+                            </div>
                         </ButtonContainer>
-
-                        {/* modal */}
-                        {isModalOpen && (
-                            <ModalOverlay onClick={handleModalClose}>
-                                <ModalContent onClick={(e) => e.stopPropagation()}>
-                                    <p>Price:</p>
-                                    <input
-                                        style={{
-                                            width: "100%",
-                                            marginBottom: 5,
-                                            marginTop: 5,
-                                            height: 50,
-                                            border: "solid thin black",
-                                            padding: 5,
-                                        }}
-                                        type="text"
-                                        value={updatedPrice}
-                                        onChange={(e) => setUpdatedPrice(e.target.value)}
-                                    />
-
-                                    <Button color="#28a745" onClick={handleUpdatePrice}>
-                                        Confirm
-                                    </Button>
-
-                                </ModalContent>
-                            </ModalOverlay>
-                        )}
                     </div>
                 </div>
-                <div className="flex flex-wrap flex-row items-center justify-center overflow-auto" style={{
+                {licenses.length ? <div className="flex flex-wrap flex-row items-center justify-center overflow-auto" style={{
                     width: 1000,
                     maxHeight: 400
                 }}>
-                    <LicenseCard
-                        license={{
-                            contentId: 99991123,
-                            user: "0x12321421321lk3lk12j3123123123213123213213123123",
-                            startDate: 12312321323130,
-                            endDate: 12319321323130,
-                            review: {
-                                detail: "good",
-                                star: Star.One
-                            }
-                        }}
-                        setLicenseToShow={function (license: License): void {
-                            throw new Error("Function not implemented.");
-                        }} />
-
-                    <LicenseCard
-                        license={{
-                            contentId: 99991123,
-                            user: "0x12321421321lk3lk12j3123123123213123213213123123",
-                            startDate: 12312321323130,
-                            endDate: 12319321323130,
-                            review: {
-                                detail: "good",
-                                star: Star.One
-                            }
-                        }}
-                        setLicenseToShow={function (license: License): void {
-                            throw new Error("Function not implemented.");
-                        }} />
-
-                    <LicenseCard
-                        license={{
-                            contentId: 99991123,
-                            user: "0x12321421321lk3lk12j3123123123213123213213123123",
-                            startDate: 12312321323130,
-                            endDate: 12319321323130,
-                            review: {
-                                detail: "good",
-                                star: Star.One
-                            }
-                        }}
-                        setLicenseToShow={function (license: License): void {
-                            throw new Error("Function not implemented.");
-                        }} />
-
-                    <LicenseCard
-                        license={{
-                            contentId: 99991123,
-                            user: "0x12321421321lk3lk12j3123123123213123213213123123",
-                            startDate: 12312321323130,
-                            endDate: 12319321323130,
-                            review: {
-                                detail: "good",
-                                star: Star.One
-                            }
-                        }}
-                        setLicenseToShow={function (license: License): void {
-                            throw new Error("Function not implemented.");
-                        }} />
-
-                    <LicenseCard
-                        license={{
-                            contentId: 99991123,
-                            user: "0x12321421321lk3lk12j3123123123213123213213123123",
-                            startDate: 12312321323130,
-                            endDate: 12319321323130,
-                            review: {
-                                detail: "good",
-                                star: Star.One
-                            }
-                        }}
-                        setLicenseToShow={function (license: License): void {
-                            throw new Error("Function not implemented.");
-                        }} />
-
-                    <LicenseCard
-                        license={{
-                            contentId: 99991123,
-                            user: "0x12321421321lk3lk12j3123123123213123213213123123",
-                            startDate: 12312321323130,
-                            endDate: 12319321323130,
-                            review: {
-                                detail: "good",
-                                star: Star.One
-                            }
-                        }}
-                        setLicenseToShow={function (license: License): void {
-                            throw new Error("Function not implemented.");
-                        }} />
-
-                    <LicenseCard
-                        license={{
-                            contentId: 99991123,
-                            user: "0x12321421321lk3lk12j3123123123213123213213123123",
-                            startDate: 12312321323130,
-                            endDate: 12319321323130,
-                            review: {
-                                detail: "good",
-                                star: Star.One
-                            }
-                        }}
-                        setLicenseToShow={function (license: License): void {
-                            throw new Error("Function not implemented.");
-                        }} />
-                </div>
+                    {licenses.map((license, i) => (
+                        <LicenseCard
+                            key={i}
+                            license={license}
+                            setLicenseToShow={function (license: License): void {
+                                throw new Error("Function not implemented.");
+                            }} />
+                    ))}
+                </div> : (
+                    <div>No license found</div>
+                )}
             </Container>
         </ContainerOverlay>
     );
@@ -338,3 +218,5 @@ const ModalContent = styled.div`
   border-radius: 5px;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
 `;
+
+export { Button }

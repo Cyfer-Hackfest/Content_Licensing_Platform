@@ -2,26 +2,28 @@ import React, { useEffect, useState } from "react";
 import styled from 'styled-components';
 import { Content, ContentId, License } from "../../types";
 import { useRouter } from "next/router";
-import { shorttenAddress } from "../../utils";
+import { milisecondsToDate, shorttenAddress, stringToNumber } from "../../utils";
 
 interface ContentCardProps {
   license: License;
-  setLicenseToShow: (license: License) => void;
+  // setLicenseToShow: (license: License) => void;
 }
 
 const LicenseCard: React.FC<ContentCardProps> = ({
   license,
-  setLicenseToShow,
+  // setLicenseToShow,
 }) => {
 
   return (
-    <CardContainer onClick={() => setLicenseToShow(license)}>
+    <CardContainer 
+    // onClick={() => setLicenseToShow(license)}
+    >
 
       <Title className="mb-2 text-center">Usage License</Title>
       <p className="my-2">by @{shorttenAddress(license.user, 6, 4)}</p>
-      <p className="my-2">Start day: {license.startDate}</p>
-      <p className="my-2">Expired day: {license.endDate}</p>
-      <Description className="my-2">{license.review.detail}</Description>
+      <p className="my-2">Start day: {milisecondsToDate(stringToNumber(license.startDate) ?? 0)}</p>
+      <p className="my-2">Expired day: {milisecondsToDate(stringToNumber(license.endDate) ?? 0)}</p>
+      <Description className="my-2">{license.review?.detail}</Description>
     
     </CardContainer>
   );

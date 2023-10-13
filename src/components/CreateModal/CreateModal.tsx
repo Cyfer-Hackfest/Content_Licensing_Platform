@@ -1,42 +1,62 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import axios from "axios";
-import { TokenMetadata } from "../../types";
-import { useTx, useWallet } from "useink";
+import { Payment, PaymentOption, TokenMetadata } from "../../types";
+import { ChainContract, useTx, useWallet } from "useink";
 import { useSelector } from "react-redux";
 import { useAppSelector } from "../../context";
 import { CreateContentRequest } from "../../types/request";
+import PaymentInputOption from "./PaymentInputOption";
 
 const NEXT_PUBLIC_PINATA_JWT = process.env.NEXT_PUBLIC_PINATA_JWT
 
 interface CreateModalProps {
     isOpen: boolean;
     onClose: () => void;
+    contract: ChainContract
 }
 
 const CreateModal: React.FC<CreateModalProps> = ({
     isOpen,
     onClose,
+    contract
 }) => {
     const { account } = useWallet()
-    const {contract} = useAppSelector(state => state.app_state);
     const [receiverId, setReceiverId] = useState<string | undefined>(undefined);
     const [metadata, setMetadata] = useState<TokenMetadata>({
-        title: "",
+        name: "",
         description: "",
         avt: "",
-        media: ""
+        media: "",
     });
+    const [payment, setPayment] = useState<Payment>({
+            option1: {
+                days: undefined,
+                price: undefined
+            },
+            option2: {
+                days: undefined,
+                price: undefined
+            },
+            option3: {
+                days: undefined,
+                price: undefined
+            },
+        })
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
-    const tx = useTx<CreateContentRequest>(contract, '');
+    const tx = useTx<CreateContentRequest>(contract, 'contentCore::createContent');
     
     useEffect(() => {
         if (account) {
             setReceiverId(account.address.toString());
         }
+        
     }, [account]);
 
+    const handleOptionChange = (optionName: keyof typeof payment, newOption: PaymentOption) => {
+        setPayment({ ...payment, [optionName]: newOption });
+      };
 
     const handleReceiverIdChange = (
         event: React.ChangeEvent<HTMLInputElement>
@@ -49,7 +69,14 @@ const CreateModal: React.FC<CreateModalProps> = ({
     };
 
     const handleSubmit = async () => {
-        tx.signAndSend([])
+        const {name, avt, description, media } = metadata;
+        const {option1, option2, option3 } = payment;
+
+        const op1 = option1.days && option1.price ? option1 : null;
+        const op2 = option2.days && option2.price ? option2 : null;
+        const op3 = option3.days && option3.price ? option3 : null;
+
+        tx.signAndSend([ name, avt, description, media, [op1, op2, op3]])
         
         onClose();
     };
@@ -93,7 +120,7 @@ const CreateModal: React.FC<CreateModalProps> = ({
     if (!isOpen) {
         return null;
     }
-
+    
     return (
         <ModalOverlay onClick={onClose}>
             <ModalContent onClick={(e) => e.stopPropagation()}>
@@ -107,58 +134,50 @@ const CreateModal: React.FC<CreateModalProps> = ({
                     onChange={handleReceiverIdChange}
                 />
 
-                <p>Title</p>
+                <p>name</p>
                 {/* Input fields for metadata */}
                 <Input
                     type="text"
-                    placeholder="Enter Title here"
-                    value={metadata.title || ""}
-                    onChange={(e) => handleMetadataChange("title", e.target.value)}
+                    placeholder="Enter name here"
+                    value={metadata.name || ""}
+                    onChange={(e) => handleMetadataChange("name", e.target.value)}
                 />
 
-                <p>Description</p>
+                <p>description</p>
                 <Input
                     type="text"
-                    placeholder="Enter Description here"
+                    placeholder="Enter description here"
                     value={metadata.description || ""}
                     onChange={(e) => handleMetadataChange("description", e.target.value)}
                 />
 
-                <p>Avatar</p>
+                <p>Avatar {metadata.avt && "uploaded"}</p>
                 <Input
                     type="file"
                     accept="image/*"
                     onChange={(e) => handleMediaUpload(e, "avt")}
                     placeholder="AVT"
                 />
-                {metadata.avt && (
-                    <img
-                        src={`https://gateway.pinata.cloud/ipfs/${metadata.avt}`}
-                        width={50}
-                        height={50}
-                        style={{
-                            margin: 5,
-                        }}
-                    />
-                )}
 
-                <p>Media</p>
+                <p>Media {metadata.media && "uploaded"}</p>
                 <Input
                     type="file"
-                    accept="image/*"
                     onChange={(e) => handleMediaUpload(e, "media")}
                     placeholder="Media"
                 />
-                {metadata.media && (
-                    <img
-                        src={`https://gateway.pinata.cloud/ipfs/${metadata.media}`}
-                        width={50}
-                        height={50}
-                        style={{
-                            margin: 5,
-                        }}
-                    />
-                )}
+                
+
+                <h2>Option 1:</h2>
+                <PaymentInputOption option={payment.option1} onChange={(newOption) => handleOptionChange('option1', newOption)} />
+
+                <h2>Option 2:</h2>
+                <PaymentInputOption option={payment.option2} onChange={(newOption) => handleOptionChange('option2', newOption)} />
+
+                <h2>Option 3:</h2>
+                <PaymentInputOption option={payment.option3} onChange={(newOption) => handleOptionChange('option3', newOption)} />
+    
+             
+
                 <div
                     style={{
                         display: "flex",
