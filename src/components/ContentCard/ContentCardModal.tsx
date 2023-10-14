@@ -2,16 +2,17 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import styled from 'styled-components';
 import { Content, License, Payment, Star } from "../../types";
-import { ChainContract, useCall, useTx, useWallet } from "useink";
+import { ChainContract, useCall, useCallSubscription, useTx, useWallet } from "useink";
 import ReactPlayer from "react-player";
 import { LicenseCard } from "../LicenseCard";
-import { useNotifications } from "useink/notifications";
+import { useNotifications, useTxNotifications } from "useink/notifications";
 import { type } from "os";
 import { useAppSelector } from "../../context";
 import UpdatePayment from "./UpdatePayment";
 import { shorttenAddress, stringToNumber } from "../../utils";
 import BuyPayment from "./BuyPayment";
 import { PaymentOptionRequest } from "../../types/request";
+import { pickDecoded } from "useink/utils";
 
 interface ContentCardModalProps {
     content: Content;
@@ -25,43 +26,26 @@ const ContentCardModal: React.FC<ContentCardModalProps> = ({ content, onClose, c
     const { account } = useWallet();
     const { network } = useAppSelector(state => state.app_state);
     const { addNotification } = useNotifications();
-    
-    const [licenses, setLicenses] = useState<Array<License>>([])
+        
+    const call = useCallSubscription<any>(contract, 'licenseCore::getLicenses', [content.contentId], { defaultCaller: true })
+    const data: Array<License> = pickDecoded(call.result)?.Ok ?? [];
     
     const buyTx = useTx<any>(contract, 'licenseCore::buyUsageLicense');
-    const call = useCall<any>(contract, 'licenseCore::getLicenses')
     const updateTx = useTx<any>(contract, 'contentCore::updatePayment');
 
-    useEffect(() => {
-        const getLicenses = async () => {
-            if (contract) {
-                await call.send([content.contentId], { defaultCaller: true })
-                // console.log(call.result);
-                if (call.result?.ok) {
-                    setLicenses(call.result.value.decoded.Ok)
-                }
-            }
-        }
-
-        getLicenses();
-
-        return () => {
-            getLicenses()
-        }
-    }, [network.chain_id, contract?.contract, content.contentId, call.result?.ok])
-
-    const handleRemoveClick = () => {
-
-    };
+    useTxNotifications(buyTx);
+    useTxNotifications(updateTx);
 
     const handleUpdatePrice = (payment: Payment) => {
         const { option1, option2, option3 } = payment;
-
-        const op1 = option1?.days && option1?.price ? option1 : null;
-        const op2 = option2?.days && option2?.price ? option2 : null;
-        const op3 = option3?.days && option3?.price ? option3 : null;
-
+        
+        const op1 = option1?.days && option1?.price ? {...option1, price: stringToNumber(option1.price)} : null;
+        const op2 = option2?.days && option2?.price ? {...option2, price: stringToNumber(option2.price)} : null;
+        const op3 = option3?.days && option3?.price ? {...option3, price: stringToNumber(option3.price)} : null;
+        
         updateTx.signAndSend([content.contentId, [op1, op2, op3]])
+
+        onClose()
     };
 
     const handleBuyContent = (op: PaymentOptionRequest) => {
@@ -79,6 +63,8 @@ const ContentCardModal: React.FC<ContentCardModalProps> = ({ content, onClose, c
         buyTx.signAndSend([content.contentId, opString], {
             value: transfering_value
         })
+
+        onClose()
     }
 
     return (
@@ -87,7 +73,6 @@ const ContentCardModal: React.FC<ContentCardModalProps> = ({ content, onClose, c
                 <div className="flex flex-row justify-center items-start">
                     <div>
                         <ReactPlayer
-                            // url={`https://gateway.pinata.cloud/ipfs/QmZhwctgtktzUCQRRbQPPZofuKo2FAKmi32y36XSrePX7j`}
                             url={`https://gateway.pinata.cloud/ipfs/${content.media}`}
                             controls
                         />
@@ -119,11 +104,11 @@ const ContentCardModal: React.FC<ContentCardModalProps> = ({ content, onClose, c
                         </ButtonContainer>
                     </div>
                 </div>
-                {licenses.length ? <div className="flex flex-wrap flex-row items-center justify-center overflow-auto" style={{
+                {data.length ? <div className="flex flex-wrap flex-row items-center justify-center overflow-auto" style={{
                     width: 1000,
                     maxHeight: 400
                 }}>
-                    {licenses.map((license, i) => (
+                    {data.map((license, i) => (
                         <LicenseCard
                             key={i}
                             license={license}

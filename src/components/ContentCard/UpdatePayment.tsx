@@ -27,8 +27,6 @@ const UpdatePayment = (props: Props) => {
     })
 
     useEffect(() => {
-        console.log(props.payment);
-        
         setPayment(props.payment)
     }, [])
 
@@ -37,7 +35,7 @@ const UpdatePayment = (props: Props) => {
             setShowUpdatePriceOption(true)
             return;
         }
-
+        
         props.onUpdate(payment)
     }
 

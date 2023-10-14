@@ -7,6 +7,7 @@ import { useSelector } from "react-redux";
 import { useAppSelector } from "../../context";
 import { CreateContentRequest } from "../../types/request";
 import PaymentInputOption from "./PaymentInputOption";
+import { useTxNotifications } from "useink/notifications";
 
 const NEXT_PUBLIC_PINATA_JWT = process.env.NEXT_PUBLIC_PINATA_JWT
 
@@ -46,6 +47,7 @@ const CreateModal: React.FC<CreateModalProps> = ({
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
     const tx = useTx<CreateContentRequest>(contract, 'contentCore::createContent');
+    useTxNotifications(tx);
     
     useEffect(() => {
         if (account) {
@@ -71,6 +73,8 @@ const CreateModal: React.FC<CreateModalProps> = ({
     const handleSubmit = async () => {
         const {name, avt, description, media } = metadata;
         const {option1, option2, option3 } = payment;
+        console.log(payment);
+        
 
         const op1 = option1.days && option1.price ? option1 : null;
         const op2 = option2.days && option2.price ? option2 : null;
@@ -151,7 +155,7 @@ const CreateModal: React.FC<CreateModalProps> = ({
                     onChange={(e) => handleMetadataChange("description", e.target.value)}
                 />
 
-                <p>Avatar {metadata.avt && "uploaded"}</p>
+                <p>Avatar {metadata.avt && "(uploaded)"}</p>
                 <Input
                     type="file"
                     accept="image/*"
@@ -159,7 +163,7 @@ const CreateModal: React.FC<CreateModalProps> = ({
                     placeholder="AVT"
                 />
 
-                <p>Media {metadata.media && "uploaded"}</p>
+                <p>Media {metadata.media && "(uploaded)"}</p>
                 <Input
                     type="file"
                     onChange={(e) => handleMediaUpload(e, "media")}

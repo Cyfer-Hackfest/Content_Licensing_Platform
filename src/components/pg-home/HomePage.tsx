@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import {
   useCall,
+  useCallSubscription,
   useContract,
   useWallet,
 } from 'useink';
@@ -19,6 +20,7 @@ import { ContentCard, ContentCardModal } from '../ContentCard';
 import { Content, ContentsResponse } from '../../types';
 import { CreateModal } from '../CreateModal';
 import metadata from '../../metadata/usage_license_contract/usage_license_contract.json'
+import { pickDecoded } from 'useink/utils';
 
 export const HomePage: React.FC = () => {
   const { network } = useAppSelector(state => state.app_state)
@@ -28,19 +30,12 @@ export const HomePage: React.FC = () => {
 
   const contract = useContract(network.contract_address, metadata, network.chain_id);
 
-  const call = useCall<any>(contract, 'contentCore::getContents');
+  const call = useCallSubscription<any>(contract, 'contentCore::getContents', [], { defaultCaller: true });
 
-  const [contentData, setContentData] = useState<Array<Content>>([])
+  const data: Array<Content> = pickDecoded(call.result)?.Ok ?? [];
+    
   const [isCreateModalOpen, setIsCreateModalOpen] = useState<boolean>(false)
   const [contentToShow, setContentToShow] = useState<Content | null>(null)
-
-  useEffect(() => {
-    getContents();
-
-    return () => {
-      getContents();
-    }
-  }, [contract?.contract])
 
   useEffect(() => {
     account &&
@@ -51,19 +46,6 @@ export const HomePage: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account]);
 
-  const getContents = async () => {
-    if (contract?.contract) {
-      console.log(call);
-      
-      await call.send([], { defaultCaller: true });
-
-      if (call.result?.ok) {
-        setContentData(call.result.value.decoded?.Ok)
-      }
-    } else {
-      setContentData([])
-    }
-  }
   if (!contract?.contract) {
     return (
       <div className='justify-center h-screen flex items-center w-full'>
@@ -84,8 +66,8 @@ export const HomePage: React.FC = () => {
         <ContentCardModal contract={contract} content={contentToShow} onClose={() => setContentToShow(null)} />
       )}
 
-      {contentData.length ? <ContentGrid >
-        {contentData.map((content, index) => (
+      {data.length ? <ContentGrid >
+        {data.map((content, index) => (
           <ContentCard
             key={index}
             content={content}
@@ -97,7 +79,7 @@ export const HomePage: React.FC = () => {
         ))}
 
       </ContentGrid> : (
-        <div>No content found</div>
+        <div className='text-center'>No content found</div>
       )}
 
       {/* <ToggleSwitch enabled={false} onChange={() => {}} /> */}

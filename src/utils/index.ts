@@ -23,7 +23,10 @@ function parsePrice(price: string, decimals: number): number | null {
   return priceNumber / 10 ** decimals;
 }
 
-function stringToNumber(price: string): number | null {
+function stringToNumber(price: string | number): number | null {
+  if (typeof price == 'number') {
+    return price;
+  }
   const priceWithoutCommas = price.replace(/,/g, ''); // Remove commas if present
   const priceNumber = parseFloat(priceWithoutCommas);
   
