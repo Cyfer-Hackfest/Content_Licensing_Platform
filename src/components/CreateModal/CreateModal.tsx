@@ -31,34 +31,34 @@ const CreateModal: React.FC<CreateModalProps> = ({
         media: "",
     });
     const [payment, setPayment] = useState<Payment>({
-            option1: {
-                days: undefined,
-                price: undefined
-            },
-            option2: {
-                days: undefined,
-                price: undefined
-            },
-            option3: {
-                days: undefined,
-                price: undefined
-            },
-        })
+        option1: {
+            days: undefined,
+            price: undefined
+        },
+        option2: {
+            days: undefined,
+            price: undefined
+        },
+        option3: {
+            days: undefined,
+            price: undefined
+        },
+    })
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
     const tx = useTx<CreateContentRequest>(contract, 'contentCore::createContent');
     useTxNotifications(tx);
-    
+
     useEffect(() => {
         if (account) {
             setReceiverId(account.address.toString());
         }
-        
+
     }, [account]);
 
     const handleOptionChange = (optionName: keyof typeof payment, newOption: PaymentOption) => {
         setPayment({ ...payment, [optionName]: newOption });
-      };
+    };
 
     const handleReceiverIdChange = (
         event: React.ChangeEvent<HTMLInputElement>
@@ -71,17 +71,17 @@ const CreateModal: React.FC<CreateModalProps> = ({
     };
 
     const handleSubmit = async () => {
-        const {name, avt, description, media } = metadata;
-        const {option1, option2, option3 } = payment;
+        const { name, avt, description, media } = metadata;
+        const { option1, option2, option3 } = payment;
         console.log(payment);
-        
+
 
         const op1 = option1.days && option1.price ? option1 : null;
         const op2 = option2.days && option2.price ? option2 : null;
         const op3 = option3.days && option3.price ? option3 : null;
 
-        tx.signAndSend([ name, avt, description, media, [op1, op2, op3]])
-        
+        tx.signAndSend([name, avt, description, media, [op1, op2, op3]])
+
         onClose();
     };
 
@@ -124,7 +124,7 @@ const CreateModal: React.FC<CreateModalProps> = ({
     if (!isOpen) {
         return null;
     }
-    
+
     return (
         <ModalOverlay onClick={onClose}>
             <ModalContent onClick={(e) => e.stopPropagation()}>
@@ -169,18 +169,27 @@ const CreateModal: React.FC<CreateModalProps> = ({
                     onChange={(e) => handleMediaUpload(e, "media")}
                     placeholder="Media"
                 />
-                
+
 
                 <h2>Option 1:</h2>
-                <PaymentInputOption option={payment.option1} onChange={(newOption) => handleOptionChange('option1', newOption)} />
+                <PaymentInputOption option={payment.option1} onChange={(newOption) => handleOptionChange('option1', newOption)} placeHolder={{
+                    day: '30',
+                    price: '1'
+                }} />
 
                 <h2>Option 2:</h2>
-                <PaymentInputOption option={payment.option2} onChange={(newOption) => handleOptionChange('option2', newOption)} />
+                <PaymentInputOption option={payment.option2} onChange={(newOption) => handleOptionChange('option2', newOption)} placeHolder={{
+                    day: '60',
+                    price: '2'
+                }} />
 
                 <h2>Option 3:</h2>
-                <PaymentInputOption option={payment.option3} onChange={(newOption) => handleOptionChange('option3', newOption)} />
-    
-             
+                <PaymentInputOption option={payment.option3} onChange={(newOption) => handleOptionChange('option3', newOption)} placeHolder={{
+                    day: '180',
+                    price: '5'
+                }} />
+
+
 
                 <div
                     style={{

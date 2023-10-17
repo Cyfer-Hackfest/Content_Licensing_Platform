@@ -48,13 +48,22 @@ const UpdatePayment = (props: Props) => {
             {showUpdatePriceOption && (
                 <div className='border bg-blue-200 rounded-lg p-2 my-2'>
             <h2>Option 1:</h2>
-            <PaymentInputOption option={payment.option1} onChange={(newOption) => handleOptionChange('option1', newOption)} />
+            <PaymentInputOption option={payment.option1} onChange={(newOption) => handleOptionChange('option1', newOption)} placeHolder={{
+                day: '30',
+                price: '1'
+            }}/>
 
             <h2>Option 2:</h2>
-            <PaymentInputOption option={payment.option2} onChange={(newOption) => handleOptionChange('option2', newOption)} />
+            <PaymentInputOption option={payment.option2} onChange={(newOption) => handleOptionChange('option2', newOption)} placeHolder={{
+                day: '60',
+                price: '2'
+            }}/>
 
             <h2>Option 3:</h2>
-            <PaymentInputOption option={payment.option3} onChange={(newOption) => handleOptionChange('option3', newOption)} />
+            <PaymentInputOption option={payment.option3} onChange={(newOption) => handleOptionChange('option3', newOption)} placeHolder={{
+                day: '180',
+                price: '5'
+            }}/>
                 </div>
             )}
             <div className='w-full'>

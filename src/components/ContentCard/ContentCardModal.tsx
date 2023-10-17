@@ -21,14 +21,14 @@ interface ContentCardModalProps {
 }
 
 const ContentCardModal: React.FC<ContentCardModalProps> = ({ content, onClose, contract }) => {
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [updatedPrice, setUpdatedPrice] = useState<string>('');
     const { account } = useWallet();
     const { network } = useAppSelector(state => state.app_state);
     const { addNotification } = useNotifications();
         
     const call = useCallSubscription<any>(contract, 'licenseCore::getLicenses', [content.contentId], { defaultCaller: true })
     const data: Array<License> = pickDecoded(call.result)?.Ok ?? [];
+
+    const ownedLicense = data.filter((license) => license.user == account?.address);    
     
     const buyTx = useTx<any>(contract, 'licenseCore::buyUsageLicense');
     const updateTx = useTx<any>(contract, 'contentCore::updatePayment');
@@ -108,14 +108,24 @@ const ContentCardModal: React.FC<ContentCardModalProps> = ({ content, onClose, c
                     width: 1000,
                     maxHeight: 400
                 }}>
-                    {data.map((license, i) => (
+                    {ownedLicense.map((license, i) => (
                         <LicenseCard
+                            contract={contract}
+                            payment={content.payment}
                             key={i}
                             license={license}
-                            setLicenseToShow={function (license: License): void {
-                                throw new Error("Function not implemented.");
-                            }} />
+                            isOwner={true}
+                             />
                     ))}
+                    {data.map((license, i) => {
+                        if (license.user != account?.address) {
+                            return (
+                                <LicenseCard
+                                    key={i}
+                                    license={license} isOwner={false}                                />
+                            )
+                        }
+                    })}
                 </div> : (
                     <div>No license found</div>
                 )}
@@ -180,28 +190,8 @@ const Button = styled.button`
   color: white;
 
   &:hover {
-    background-color: #f0f0f0;
+    background-color: black;
   }
-`;
-
-const ModalOverlay = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-`;
-
-const ModalContent = styled.div`
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background-color: white;
-  padding: 20px;
-  border-radius: 5px;
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
 `;
 
 export { Button }

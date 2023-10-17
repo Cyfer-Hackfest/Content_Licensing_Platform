@@ -71,10 +71,6 @@ export const HomePage: React.FC = () => {
           <ContentCard
             key={index}
             content={content}
-            isAuthor={false}
-            onBuyClick={function (contentId: string): void {
-              throw new Error('Function not implemented.');
-            }}
             setContentToShow={() => setContentToShow(content)} />
         ))}
 

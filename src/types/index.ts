@@ -52,6 +52,7 @@ export enum Star {
 
 type License = {
     contentId: number,
+    licenseId: number,
     user: string,
     startDate: string,
     endDate: string,

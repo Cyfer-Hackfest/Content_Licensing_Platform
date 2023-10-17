@@ -6,7 +6,11 @@ import { useAppSelector } from "../../context";
 const PaymentInputOption: React.FC<{
     option: PaymentOption;
     onChange: (newOption: PaymentOption) => void;
-  }> = ({ option, onChange }) => {
+    placeHolder: {
+      day: string,
+      price: string
+    }
+  }> = ({ option, onChange, placeHolder }) => {
     const {network } = useAppSelector(state => state.app_state)
 
     const price = option?.price ? parsePrice(option?.price?.toString(), network.decimals) : '';
@@ -18,7 +22,7 @@ const PaymentInputOption: React.FC<{
           <Input
             type="number"
             value={option?.days}
-            placeholder={`30`}
+            placeholder={placeHolder.day}
             className="w-12 mx-1 my-0.5 p-0.5 text-center rounded-xl" 
             onChange={(e) => onChange({ ...option, days: parseInt(e.target.value) || undefined })}
           />
@@ -28,7 +32,7 @@ const PaymentInputOption: React.FC<{
           <Input
             type="number"
             value={price}
-            placeholder={`1`}
+            placeholder={placeHolder.price}
             className="w-12 mx-1 my-0.5 p-0.5 text-center rounded-xl" 
             onChange={(e) => onChange({ ...option, price: reparsePrice(parseFloat(e.target.value), network.decimals) || undefined })}
           />

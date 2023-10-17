@@ -8,11 +8,13 @@ import { useAppDispatch, useAppSelector } from '../../context';
 import { NetWork } from '../../types';
 import { setNetwork } from '../../context/appState';
 import metadata from '../../metadata/usage_license_contract/usage_license_contract.json'
+import { useNotifications } from 'useink/notifications';
 
 export const SwitchNetwork = () => {
     const { account } = useWallet();
     const [showNetworkSwitch, setShowNetworkSwitch] = useState(false);
     const {network} = useAppSelector(state => state.app_state)
+  const { addNotification } = useNotifications();
 
     const balance = useBalance(account, network.chain_id);
     const freeBalance = stringToNumber(planckToDecimalFormatted(balance?.freeBalance, {
@@ -22,7 +24,11 @@ export const SwitchNetwork = () => {
     const dispatch = useAppDispatch()
 
     const switchNetwork  =async (network: NetWork) => {
-        dispatch(setNetwork({network }))
+        dispatch(setNetwork({network }));
+        addNotification({
+            type: '',
+            message: `Switching to ${network.name}`
+        })
     }
 
     return (
